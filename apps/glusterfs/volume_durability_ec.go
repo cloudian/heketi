@@ -49,15 +49,22 @@ func (d *VolumeDisperseDurability) SetDurability() {
 
 func (d *VolumeDisperseDurability) BrickSizeGenerator(size uint64) func() (int, uint64, error) {
 
-	sets := 1
+	seeds := []int{1, 3, 5, 7, 9, 11}
 	return func() (int, uint64, error) {
 
 		var brick_size uint64
 		var num_sets int
 
 		for {
-			num_sets = sets
-			sets *= 2
+			min_idx := 0
+			num_sets = seeds[min_idx]
+			for idx, v := range seeds {
+				if v < num_sets {
+					min_idx = idx
+					num_sets = v
+				}
+			}
+			seeds[min_idx] *= 2
 			brick_size = size / uint64(num_sets)
 
 			// Divide what would be the brick size for replica by the
